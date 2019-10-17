@@ -46,3 +46,17 @@ plt.legend(loc='best')
 plt.xlabel('Time (sec.)')
 plt.ylabel('Amplitude (a.u.)')
 plt.show()
+
+##############################Pasos para generar una señal############################# 
+# 𝑥_1 [n]=𝐴𝑐𝑜𝑠(𝜔n+𝜃)",  -∞ < n < ∞ , n "∈" Ζ"
+# elegir parámetros
+freq = 5;    # frequencia en Hertz
+ampl = 2;    # amplitud
+
+x = np.linspace(0., 2.0 * np.pi*freq, 100) #(inicio y fin en grados )
+
+sinewave_3=np.sin(x)
+
+plt.stem(x,sinewave_3, use_line_collection=True, label='Discrete sinewave')
+plt.legend(loc='best')
+plt.show()
