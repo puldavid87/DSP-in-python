@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 28 18:30:00 2019
+
+@author: Dell
+"""
+
+#De numpy se importa lo necesario para graficar la
+
+import numpy as np # librerías de formas matematicas
+import pylab as plt # graficas
+
+
+
+# con velocidad de muestreo de 80 Hz
+
+f = 80  # Hz
+
+#Tiempo minimo y maximo
+
+tmin = -0.3
+
+tmax = 0.3
+
+#Se define el tiempo de la segnal.
+
+t = np.linspace(tmin, tmax, 400)
+
+#Se define la segnal de muestreo
+
+x = np.cos(2*np.pi*t) + np.cos(2*np.pi*f*t)
+
+#Se grafica el tiempo y la segnal.
+
+plt.plot(t, x)
+
+
+
+# sampling the signal with a sampling rate of 80 Hz
+
+# in this case, we are using the Nyquist rate.
+
+#Muestreo de la segnal con una velocidad de muestreo de 80 Hz.
+
+#Periodo de muestreo
+
+T = 1/(2*f)
+
+#Tiempo minimo
+
+nmin = np.ceil(tmin / T)
+
+#Tiempo maximo
+
+nmax = np.floor(tmax / T)
+
+#Tiempo de la segnal.
+
+n = np.arange(nmin,nmax)
+
+#Segnal a la velocidad de muestreo
+
+x1 = np.cos(2*np.pi*n*T) + np.cos(2*np.pi*f*n*T)
+
+#Se grafica la segnal.
+
+plt.plot(n*T, x1, 'b.')
+
+#################################################################
+###### SAMPLIG OF AUDIO SIGNAL###################################
+import scipy.io.wavfile as waves
+import numpy as np # librerías de formas matematicas
+import matplotlib.pyplot as plt # graficas
+from scipy import integrate
+#CARGAR ARCHIVO DE AUDIO
+
+audio= 'ragnar.wav'
+muestras, sonido=waves.read(audio)
+
+muestras
+sonido
+np.shape(sonido)
+#copiar a un solo canal
+
+izq=sonido[:,0].copy()
+izq
+
+#graficar
+plt.plot(izq)
+plt.show()
+
+out=waves.write('out.wav',int(2*muestras),sonido)
+plt.plot(muestras,out)
+plt.show()
