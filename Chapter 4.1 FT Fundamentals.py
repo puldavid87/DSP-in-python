@@ -83,6 +83,19 @@ plt.xlabel('Real axis'), plt.ylabel('Imaginary axis')
 plt.show()
 
 #Complex sine wave
+# general simulation parameters
+srate = 500; # sampling rate in Hz
+time  = np.arange(0.,2.,1./srate) # time in seconds
+
+# sine wave parameters
+freq = 5;    # frequency in Hz
+ampl = 2;    # amplitude in a.u.
+phas = np.pi/3; # phase in radians
+
+# generate the sine wave
+#e^j(2pift+phase)
+csw = ampl * np.exp( 1j* (2*np.pi * freq * time + phas) )
+#Complex sine wave
 # now show in 3D
 fig = plt.figure()
 ax = fig.gca(projection='3d')
