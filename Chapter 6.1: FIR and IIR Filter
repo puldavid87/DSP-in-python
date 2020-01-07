@@ -1,0 +1,140 @@
+from scipy import signal 
+import numpy as np
+from matplotlib import pyplot as plt
+from scipy.fftpack  import fft, fftshift
+
+#librería signal
+#blackman 
+window_blackman=signal.get_window('blackman',51)
+window_triang=signal.get_window('triang',51)
+window_hamming=signal.get_window('hamming',51)
+window_gaussian=signal.gaussian(51, std=7)
+
+plt.plot(window_blackman, label='blackman_window', color='blue')
+plt.plot(window_triang, label='triang_window', color='green')
+plt.plot(window_hamming, label='hamming_window', color='red')
+plt.plot(window_gaussian, label='gaussian_window', color='yellow')
+plt.legend(loc='best')
+plt.grid()
+plt.show()
+
+A = fft(window_triang)
+mag = np.abs(fftshift(A))
+freq = np.linspace(-0.5, 0.5, len(A))
+with np.errstate(divide='ignore', invalid='ignore'):
+    response = 20 * np.log10(mag)
+response = np.clip(response, -100, 100)
+plt.plot(freq, response)
+
+from numpy import cos,sin,pi,arange,absolute
+sampling_rate=100
+nsamples=400
+t=arange(nsamples)/sampling_rate
+x1=cos(2*pi*0.5*t)
+x2=0.2*sin(2*pi*15.3*t)
+x3=0.1*sin(2*pi*23.45*t)
+x=x1+x2+x3
+plt.plot(x)
+plt.show()
+
+#filtros por ventanas
+
+lowpass_coef=signal.firwin(10,15,nyq=100, window='nuttall')
+output=signal.convolve(x,lowpass_coef, mode='same')
+plt.plot(t,output)
+
+
+highpas_coef=signal.firwin(81, 10,nyq=100, pass_zero=False,window='nuttall')#ganacia
+output=signal.convolve(x,highpas_coef, mode='same')
+plt.plot(t,output)
+
+
+f1, f2 = 10, 20
+bandpass_coef=signal.firwin(31, [f1, f2], pass_zero=False ,nyq=100,window='nuttall')#pasa banda
+output=signal.convolve(x,bandpass_coef, mode='same')
+plt.plot(t,output)
+
+
+
+#butterworth
+from scipy import signal
+import matplotlib.pyplot as plt
+b, a = signal.butter(4, 100, 'low', analog=True)
+w, h = signal.freqs(b, a)
+plt.plot(w, 20 * np.log10(abs(h)))
+plt.xscale('log')
+plt.title('Butterworth filter frequency response')
+plt.xlabel('Frequency [radians / second]')
+plt.ylabel('Amplitude [dB]')
+plt.margins(0, 0.1)
+plt.grid(which='both', axis='both')
+plt.axvline(100, color='green') # cutoff frequency
+plt.show()
+
+#cheby1
+
+from scipy import signal
+import matplotlib.pyplot as plt
+
+b, a = signal.cheby1(4, 5, 100, 'low', analog=True)
+w, h = signal.freqs(b, a)
+plt.semilogx(w, 20 * np.log10(abs(h)))
+plt.title('Chebyshev Type I frequency response (rp=5)')
+plt.xlabel('Frequency [radians / second]')
+plt.ylabel('Amplitude [dB]')
+plt.margins(0, 0.1)
+plt.grid(which='both', axis='both')
+plt.axvline(100, color='green') # cutoff frequency
+plt.axhline(-5, color='green') # rp
+plt.show()
+
+
+#cheby 2
+b, a = signal.cheby2(4, 40, 100, 'low', analog=True)
+w, h = signal.freqs(b, a)
+plt.semilogx(w, 20 * np.log10(abs(h)))
+plt.title('Chebyshev Type II frequency response (rs=40)')
+plt.xlabel('Frequency [radians / second]')
+plt.ylabel('Amplitude [dB]')
+plt.margins(0, 0.1)
+plt.grid(which='both', axis='both')
+plt.axvline(100, color='green') # cutoff frequency
+plt.axhline(-40, color='green') # rs
+plt.show()
+
+
+#bessel
+b, a = signal.bessel(4, 1, 'low', analog=True)
+w, h = signal.freqs(b, a)
+plt.plot(w, 20 * np.log10(np.abs(h)))
+plt.xscale('log')
+plt.title('Bessel filter frequency response (with Butterworth)')
+plt.xlabel('Frequency [radians / second]')
+plt.ylabel('Amplitude [dB]')
+plt.margins(0, 0.1)
+plt.grid(which='both', axis='both')
+plt.axvline(100, color='green') # cutoff frequency
+plt.show()
+
+#filtros iir
+from numpy import cos,sin,pi,arange,absolute
+sampling_rate=100
+nsamples=400
+t=arange(nsamples)/sampling_rate
+x1=cos(2*pi*0.5*t)
+x2=0.2*sin(2*pi*15.3*t)
+x3=0.1*sin(2*pi*23.45*t+0.8)
+x=x1+x2+x3
+plt.plot(x1)
+plt.show()
+
+sos = signal.cheby1(10, 1, 1, 'lp', fs=100, output='sos')
+filtered = signal.sosfilt(sos, x)
+plt.plot(t,filtered)
+
+
+sos = signal.butter(4, 1, 'lp', fs=100,analog=False, output='sos')
+filtered = signal.sosfilt(sos, x)
+plt.plot(t,filtered)
+
+filtered1=signal.convolve(sos,x)
