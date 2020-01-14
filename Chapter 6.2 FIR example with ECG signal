@@ -1,0 +1,55 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import signals as sigs # Chapter 0
+from scipy.fftpack import fft,ifft
+from scipy import signal
+
+# fft transformation to detect frequency spectral for each time series signal
+freq_domain_signal = fft(sigs.ecg_100Hz)
+plt.stem(freq_domain_signal)
+plt.xlim(0,100)
+plt.show()
+#valor max de x =175
+#grafica está dividida en 7 segmentos
+#frecuencia de muestreo es de 100Hz
+
+#50 -> 14.5 Hz
+#25-> 7.25  Hz
+#5-> 1.45   Hz
+
+######filtros FIR
+
+
+#vector de analisis normalizado
+signal_ecg=np.zeros(len(sigs.ecg_100Hz))
+
+#normalizar la señal de entrada
+for i,num in enumerate (sigs.ecg_100Hz):
+    signal_ecg[i]=float(sigs.ecg_100Hz[i]/max(sigs.ecg_100Hz))
+    
+#grafica normalizada
+plt.plot(signal_ecg)
+plt.show()    
+    
+#generación de filtro por ventana
+###############################################################################
+#filtro pasa banda
+bandpas_coef=signal.firwin(91,[2,30],nyq=100,pass_zero=False,window='blackman')
+
+#grafica de coeficientes
+plt.plot(bandpas_coef)
+plt.show()
+###############################################################################
+#convolucion
+signal_output=signal.convolve(signal_ecg, bandpas_coef,mode='same')
+
+#grafica de resultados
+plt.plot(signal_output, color='red')
+plt.plot(signal_ecg, color='blue')
+plt.show()
+###############################################################################
+#analisis de frecuencia
+freq_domain_signal = fft(signal_output)
+plt.stem(signal_output)
+plt.xlim(0,100)
+plt.show()
