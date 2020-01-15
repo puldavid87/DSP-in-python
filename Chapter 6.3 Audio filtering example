@@ -1,0 +1,41 @@
+import wave
+import numpy
+import matplotlib.pyplot as plt
+from scipy import signal
+from scipy.signal import filtfilt
+from scipy.fftpack import fft,ifft
+
+spf = wave.open('ragnar.wav','r')
+(nChannels, sampWidth, sampleRate, nFrames, compType, compName) = spf.getparams()
+
+# extract audio from wav file
+input_signal = spf.readframes(-1)
+input_signal = numpy.fromstring(input_signal, 'Int16')
+spf.close()
+
+freq_domain_signal = fft(input_signal)
+plt.stem(freq_domain_signal)
+plt.xlim(1000)
+plt.show()
+# create the filter
+N = 4
+nyq = 0.5 * sampleRate
+low = 100/ nyq
+high = 1000 / nyq
+b, a = signal.butter(N, 2500, fs=sampleRate, btype='hp')
+
+# apply filter
+output_signal = signal.filtfilt(b, a, input_signal)
+
+# ceate output file
+wav_out = wave.open("output.wav", "w")
+wav_out.setparams((nChannels, sampWidth, int(4*sampleRate), nFrames, compType, compName))
+
+# write to output file
+wav_out.writeframes(output_signal.tobytes())
+wav_out.close()
+
+# plot the signals
+plt.plot( input_signal, label='Input')
+plt.plot(output_signal, label='Output')
+plt.show()
