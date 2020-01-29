@@ -124,6 +124,152 @@ show_image(med, None)
 
 
 import cv2
+#download this: mport matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+#cargar imagen
+from skimage.io import imread
+img_path = 'elephant.png' # elephant
+img = imread(img_path)
+
+img.shape # H x W x Chanel
+img.size # multiplication of HxWxC
+type(img)
+img.dtype
+
+plt.imshow(img)
+plt.show()
+
+# Normalise
+x = img/255 # np.max(img), np.min(img)
+print(type(x))
+print(x.shape) # H x W x C
+plt.imshow(x)
+
+# Gray image reading
+img = imread(img_path, as_grey=True)
+img.shape # H x W x C
+img.size # multiplication of WxHxC
+type(img)
+
+plt.imshow(img, cmap=plt.get_cmap('gray')) # cm.gray
+plt.show()
+
+
+
+#Gray to Black and White
+# Pixel range is 0...255, 256/2 = 128
+np.min(img), np.max(img)
+cutoff = np.max(img)/2
+img[img < cutoff] = 0    # Black
+img[img >= cutoff] = 1 # White
+
+plt.imshow(img, cmap=plt.get_cmap('gray')) # cm.gray
+plt.show()
+#Beyond individual pixels, it is possible to access / modify values of whole sets of pixels, using
+#the different indexing possibilities of NumPy.
+
+#Slicing:
+# Set to black the ten first lines
+camera[:10] = 0
+def show_image(img, cmap='gray', row_plot = 1):
+    if not isinstance(img, list):
+        img = [img]
+
+    if len(img) == 1:
+        plt.imshow(img[0], cmap=cmap) # cm.gray
+    else:
+        # Get column count
+        col_plot = len(img) // row_plot
+        fig, axes = plt.subplots(row_plot, col_plot)
+        for count in range(len(img)): # count= 1
+            axes[count].imshow(img[count], cmap=cmap)
+    plt.show()
+    return
+show_image(camera)
+
+
+#Masking (indexing with masks of booleans):
+mask = camera < 87 # Just random to mask extreme black points
+
+# Set to "white" (255) pixels where mask is True
+camera[mask] = 255
+
+show_image(camera)
+
+cat = data.chelsea()
+type(cat)
+cat.shape #(300, 451, 3) This shows that cat is a 300-by-451 pixel image with three channels (red, green, and blue). As before, we can get and set pixel values:
+show_image(cat, None)
+
+# See few data
+cat[10, 20] #array([151, 129, 115], dtype=uint8) # [red, green, blue]
+
+ # set the pixel at row 51, column 51 to black
+cat[50, 50] = 0
+
+# set the pixel at row 51, column 61 to green
+cat[50, 60] = [0, 255, 0] # [red, green, blue]
+show_image(cat, None) # see on mspaint
+
+#CW: Points may not be visible and hence change for whole column for both black and green cat[50, :]
+
+#We can also use 2D boolean masks for a 2D color image, as we did with the grayscale image above:
+cat = data.chelsea()
+some_threshold = cat[:, :, 0] > 160
+cat[some_threshold] = [255, 255, 0] # RGB
+show_image(cat, None) # More greenish
+
+# Convert to black and white
+from skimage.color import rgb2gray, rgb2xyz, gray2rgb, rgb2hsv
+from skimage import img_as_float
+from skimage.filters import median, gaussian, hessian
+from skimage.morphology import disk
+
+# First let us convert using both manually and library. See if any difference
+cat = data.chelsea()
+cat_library = rgb2hsv(cat)
+cat_library.shape
+
+show_image(cat_library, None)
+
+cat_library = rgb2gray(cat)
+cat_library.shape
+
+ img_xyz = rgb2xyz(cat)
+ img_xyz.shape
+
+img = data.camera()
+med = hessian(img)
+show_image(med, None)
+
+ from skimage.data import astronaut
+ 
+ image = data.astronaut()
+ filtered_img = gaussian(image, sigma=2, multichannel=True)
+
+
+
+
+
+import cv2
+# Load the cascade
+#https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml}
+
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+# Read the input image
+img = cv2.imread('test.jpg')
+# Convert into grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Detect faces
+faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+# Draw rectangle around the faces
+for (x, y, w, h) in faces:
+    cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+# Display the output
+cv2.imshow('img', img)
+cv2.waitKey()
 # Load the cascade
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 # Read the input image
