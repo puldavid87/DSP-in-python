@@ -1,0 +1,156 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Feb  5 09:00:35 2020
+
+@author: Dell
+"""
+#Libraries
+import  cv2
+import numpy as np
+
+# Load an image using 'imread' specifying the path to image
+input = cv2.imread('elephant.png')
+
+# To display our image variable, we use 'imshow'
+cv2.imshow('Test',input)
+# 'waitKey' allows us to input information when a image window is open
+cv2.waitKey()
+# This closes all open windows 
+cv2.destroyAllWindows()
+#image size
+print (input.shape)
+#(284, 313, 3)
+#The 2D dimensions are 284 pixels in high bv 313 pixels wide.
+#The '3L' means that there are 3 other components (RGB) that make up this image.
+
+# Let's print each dimension of the image
+
+print ('Height of Image:', int(input.shape[0]), 'pixels')
+print ('Width of Image: ', int(input.shape[1]), 'pixels')
+
+# Simply use 'imwrite' specificing the file name and the image to be saved
+cv2.imwrite('output.jpg', input)
+
+
+##############################################GRAYSCALE#####################################
+# Use cvtColor, to convert to grayscale
+gray_image = cv2.cvtColor(input, cv2.COLOR_BGR2GRAY)
+
+cv2.imshow('Grayscale', gray_image)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+#Another method faster method
+img = cv2.imread('elephant.png',0)
+
+cv2.imshow('Grayscale', img)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+#########################################################COLOR SPACES############################
+# BGR Values for the first 10,50 pixel
+B, G, R = input[10, 50] 
+print (B, G, R)
+print (input.shape)
+#(284, 313, 3)
+#grayscale
+print (gray_image[10, 50]) 
+#175
+
+######################################################HSV#######################################
+#Infact HSV is very useful in color filtering.
+hsv_image = cv2.cvtColor(input, cv2.COLOR_BGR2HSV)
+
+cv2.imshow('HSV image', hsv_image)
+cv2.imshow('Hue channel', hsv_image[:, :, 0])
+cv2.imshow('Saturation channel', hsv_image[:, :, 1])
+cv2.imshow('Value channel', hsv_image[:, :, 2])
+
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+#####################################INDIVIDUAL CHANELS IN RGB IMAGE############################
+B, G, R = cv2.split(input)
+
+print (B.shape)
+cv2.imshow("Red", R)
+cv2.imshow("Green", G)
+cv2.imshow("Blue", B)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Let's re-make the original image, 
+merged = cv2.merge([B, G, R]) 
+
+
+# amplify the blue color
+merged = cv2.merge([B+100, G, R])
+cv2.imshow("Merged with Blue Amplified", merged) 
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#############################CONVERT MATRIX###########################333
+# Let's create a matrix of zeros 
+# with dimensions of the image h x w  
+zeros = np.zeros(input.shape[:2], dtype = "uint8")
+
+cv2.imshow("Red", cv2.merge([zeros, zeros, R]))
+cv2.imshow("Green", cv2.merge([zeros, G, zeros]))
+cv2.imshow("Blue", cv2.merge([B, zeros, zeros]))
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+###############################Histogram##################
+from matplotlib import pyplot as plt
+
+histogram = cv2.calcHist([input], [0], None, [256], [0, 256])
+
+# We plot a histogram, ravel() flatens our image array 
+plt.hist(input.ravel(), 256, [0, 256]); plt.show()
+
+# Viewing Separate Color Channels
+color = ('b', 'g', 'r')
+
+# We now separate the colors and plot each in the Histogram
+for i, col in enumerate(color):
+    histogram2 = cv2.calcHist([input], [i], None, [256], [0, 256])
+    plt.plot(histogram2, color = col)
+    plt.xlim([0,256])
+    
+plt.show()
+
+###########################draw images#########################################
+
+# Create a black image
+image = np.zeros((512,512,3), np.uint8)
+
+# Can we make this in black and white?
+image_bw = np.zeros((512,512), np.uint8)
+
+cv2.imshow("Black Rectangle (Color)", image)
+cv2.imshow("Black Rectangle (B&W)", image_bw)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Draw a diagonal blue line of thickness of 5 pixels
+image = np.zeros((512,512,3), np.uint8)
+cv2.line(image, (0,0), (511,511), (255,127,0), 5)
+cv2.imshow("Blue Line", image)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Draw a Rectangle in
+image = np.zeros((512,512,3), np.uint8)
+cv2.rectangle(image, (100,100), (300,250), (127,50,127), -1)
+cv2.imshow("Rectangle", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#circles
+image = np.zeros((512,512,3), np.uint8)
+cv2.circle(image, (350, 350), 100, (15,75,50), -1) 
+cv2.imshow("Circle", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
